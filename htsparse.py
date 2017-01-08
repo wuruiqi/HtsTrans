@@ -10,19 +10,21 @@ import csv
 import sys
 import getopt
 import os
+
+actionsum = 0
 def cmdparse(str_file,cmd_dict):     # hts文件命令解析    
     cmd_dict['actionFlag'] = int(str_file[3],16)
     cmd_dict['actionAmount'] = twoByteTrans( map(lambda a:int(a,16),str_file[4:6]))
     cmd_dict['actionID'] = twoByteTrans( map(lambda a:int(a,16),str_file[6:8]))
     cmd_dict['jointAngle'] = map(lambda a:int(a,16),str_file[8:28])
     cmd_dict['runTime'] = int(str_file[28],16)*20
-    cmd_dict['totalTime'] = (int(str_file[29],16)*255+int(str_file[30],16)+2)*20
+    cmd_dict['totalTime'] = (int(str_file[29],16)*256+int(str_file[30],16)+2)*20
     cmd_dict['check'] = str_file[31]
     return cmd_dict
 
 def twoByteTrans(x):        # 高位低存数据转换
     if x[1]!=0:
-        return x[0]+x[1]*255
+        return x[0]+x[1]*256
     else :
         return x[0]
    
@@ -46,6 +48,9 @@ def hts2csv(htsfile,csvfile) :    # hts文件转换为csv文件
                break
     touch_csv.close()
     print "%s translation success,Total %d actions" %(os.path.split(htsfile)[1],cmd_dict['actionAmount']) 
+    global actionsum   #计算转换动作总数
+    actionsum += cmd_dict['actionAmount']
+    print actionsum
 
 def batchTrans(input_dir,output_dir=None):  #批量转换hts文件为csv文件
     if os.path.isdir(input_dir) is False:
