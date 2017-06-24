@@ -16,7 +16,7 @@ def cmdparse(str_file,cmd_dict):     # hts文件命令解析
     cmd_dict['actionFlag'] = int(str_file[3],16)
     cmd_dict['actionAmount'] = twoByteTrans( map(lambda a:int(a,16),str_file[4:6]))
     cmd_dict['actionID'] = twoByteTrans( map(lambda a:int(a,16),str_file[6:8]))
-    cmd_dict['jointAngle'] = map(lambda a:int(a,16),str_file[8:28])
+    cmd_dict['jointAngle'] = map(lambda a:min(int(a,16), 180),str_file[8:28])
     cmd_dict['runTime'] = int(str_file[28],16)*20
     cmd_dict['totalTime'] = (int(str_file[29],16)*256+int(str_file[30],16)+2)*20
     cmd_dict['check'] = str_file[31]
@@ -27,7 +27,7 @@ def twoByteTrans(x):        # 高位低存数据转换
         return x[0]+x[1]*256
     else :
         return x[0]
-   
+
 def hts2csv(htsfile,csvfile) :    # hts文件转换为csv文件
     with open(htsfile,"rb") as f:
         file_str = f.read()
